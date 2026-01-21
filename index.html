@@ -11,18 +11,25 @@
             --text-main: #fff; --text-sub: #b0b8c4; --border: rgba(255,255,255,0.1); --sidebar-bg: #131921;
         }
         body { font-family: 'Inter', sans-serif; display: flex; margin: 0; height: 100vh; background: var(--bg-body); color: var(--text-main); overflow: hidden; }
+        
+        /* SIDEBAR */
         #sidebar { width: 350px; background: var(--sidebar-bg); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 10; }
         .logo-area { padding: 20px; text-align: center; border-bottom: 1px solid var(--border); }
-        .logo-area img { max-width: 140px; cursor: pointer; }
+        .logo-area img { max-width: 140px; }
+        
         .controls { padding: 15px; border-bottom: 1px solid var(--border); }
         .search-box { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border); background: #1c222d; color: #fff; outline: none; margin-bottom: 10px; box-sizing: border-box; }
+        
         .category-filters { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 5px; }
         .cat-btn { padding: 6px 12px; font-size: 11px; border-radius: 20px; border: 1px solid var(--primary); background: transparent; color: var(--primary); cursor: pointer; transition: 0.2s; }
         .cat-btn.active { background: var(--primary); color: white; }
+
         .menu-scroll-area { flex-grow: 1; overflow-y: auto; padding: 15px; }
         .cocktail-item { padding: 12px; margin-bottom: 8px; cursor: pointer; border-radius: 10px; background: var(--bg-card); border: 1px solid var(--border); font-weight: 600; font-size: 11px; text-transform: uppercase; transition: 0.2s; }
         .cocktail-item:hover { transform: translateX(5px); border-color: var(--primary); }
         .active-item { background: var(--primary) !important; color: white !important; }
+
+        /* CONTENT */
         #content { flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
         .flip-card { width: 400px; height: 580px; perspective: 1000px; }
         .flip-card-inner { position: relative; width: 100%; height: 100%; transition: 0.6s; transform-style: preserve-3d; cursor: pointer; }
@@ -32,20 +39,14 @@
         .flip-card-back { transform: rotateY(180deg); overflow-y: auto; border: 2px solid var(--primary); }
         .info-label { color: var(--primary); font-size: 11px; font-weight: 800; text-transform: uppercase; margin-top: 15px; display: block; border-left: 2px solid var(--primary); padding-left: 8px; }
         .info-detail { font-size: 14px; margin-top: 5px; white-space: pre-line; color: var(--text-sub); line-height: 1.5; }
-        #admin-panel { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0a0e14; z-index: 1000; display: none; padding: 40px; box-sizing: border-box; overflow-y: auto; }
     </style>
 </head>
 <body>
 
-<div id="admin-panel">
-    <button style="position:fixed; top:20px; right:20px; padding:10px 20px; background:red; color:white; border:none; border-radius:8px; cursor:pointer;" onclick="closeAdmin()">KAPAT</button>
-    <h1>⚙️ Sistem Sıfırlama</h1>
-    <p>Eğer içerik görünmüyorsa aşağıdaki butona basarak fabrika ayarlarına dönebilirsiniz:</p>
-    <button style="padding:15px; background:var(--primary); color:white; border:none; border-radius:8px; cursor:pointer;" onclick="resetSystem()">FABRİKA AYARLARINA DÖN VE YÜKLE</button>
-</div>
-
 <div id="sidebar">
-    <div class="logo-area"><img src="images/merit_logo.jpg" alt="Logo" onclick="openAdmin()"></div>
+    <div class="logo-area">
+        <img src="images/merit_logo.jpg" alt="Logo">
+    </div>
     <div class="controls">
         <input type="text" class="search-box" id="searchInput" placeholder="Kokteyl ara..." onkeyup="renderMenu()">
         <div class="category-filters" id="main-cat-filters"></div>
@@ -105,15 +106,15 @@
         { name: "Dulce Sueno", ingredients: "POMEGRANATE, CITRUS, RASPBERRY, FOAMER", method: "METHOD: SHAKE\nGLASS: LONG DRINK\nGARNISH: ROSE" }
     ];
 
-    const defaultMappings = {"Stalker":["Mocktail","ALKOLSÜZ"],"Okami":["Mocktail","ALKOLSÜZ"],"Dulce Sueno":["Mocktail","ALKOLSÜZ"],"Negroni":["Classic","CİN"],"Pornstar Martini":["VOTKA"],"Espresso Martini":["VOTKA"],"Dry Martini":["CİN"],"Old Fashioned":["VİSKİ"],"Manhattan":["VİSKİ"],"Mojito":["RUM"],"Gin Fizz":["CİN"],"Margarita":["TEKİLA"],"Mai Tai":["RUM"],"New York Sour":["VİSKİ"],"Old Cuban":["RUM"],"Long Island Ice Tea":["VOTKA","CİN","RUM","TEKİLA"],"Daiquiri":["RUM"],"Cosmopolitan":["VOTKA"],"Bloody Marry":["VOTKA"],"Aperol Sour":["CİN"],"Amaretto Sour":["VİSKİ"],"Pina Colada":["RUM"],"Chili Passion":["TEKİLA"],"Whiskey Sour":["VİSKİ"],"White Russian":["VOTKA"],"Sex on the Beach":["VOTKA"],"Green Apple Martini":["VOTKA"],"Serenity":["TEKİLA"],"Spectrum":["CİN"]};
-    const defaultCats = ["All", "VOTKA", "VİSKİ", "CİN", "TEKİLA", "RUM", "ALKOLSÜZ"];
-
+    const mappings = {"Stalker":["Mocktail","ALKOLSÜZ"],"Okami":["Mocktail","ALKOLSÜZ"],"Dulce Sueno":["Mocktail","ALKOLSÜZ"],"Negroni":["Classic","CİN"],"Pornstar Martini":["VOTKA"],"Espresso Martini":["VOTKA"],"Dry Martini":["CİN"],"Old Fashioned":["VİSKİ"],"Manhattan":["VİSKİ"],"Mojito":["RUM"],"Gin Fizz":["CİN"],"Margarita":["TEKİLA"],"Mai Tai":["RUM"],"New York Sour":["VİSKİ"],"Old Cuban":["RUM"],"Long Island Ice Tea":["VOTKA","CİN","RUM","TEKİLA"],"Daiquiri":["RUM"],"Cosmopolitan":["VOTKA"],"Bloody Marry":["VOTKA"],"Aperol Sour":["CİN"],"Amaretto Sour":["VİSKİ"],"Pina Colada":["RUM"],"Chili Passion":["TEKİLA"],"Whiskey Sour":["VİSKİ"],"White Russian":["VOTKA"],"Sex on the Beach":["VOTKA"],"Green Apple Martini":["VOTKA"],"Serenity":["TEKİLA"],"Spectrum":["CİN"]};
+    const categories = ["All", "VOTKA", "VİSKİ", "CİN", "TEKİLA", "RUM", "ALKOLSÜZ"];
+    
     let currentCat = "All";
 
     function updateMainFilters() {
         const cont = document.getElementById('main-cat-filters');
         cont.innerHTML = '';
-        defaultCats.forEach(cat => {
+        categories.forEach(cat => {
             const btn = document.createElement('button');
             btn.className = `cat-btn ${currentCat === cat ? 'active' : ''}`;
             btn.innerText = cat === "All" ? "Hepsi" : cat;
@@ -128,7 +129,7 @@
         menu.innerHTML = '';
         baseCocktails.forEach(c => {
             const matchesSearch = c.name.toLowerCase().includes(search);
-            const myCats = defaultMappings[c.name] || [];
+            const myCats = mappings[c.name] || [];
             const matchesCat = currentCat === "All" || myCats.includes(currentCat);
             if(matchesSearch && matchesCat) {
                 const div = document.createElement('div');
@@ -149,19 +150,6 @@
         const img = c.name.toLowerCase().replace(/\s+/g, '') + ".jpg";
         document.getElementById('display-img').src = "images/" + img;
         document.getElementById('card').classList.remove('flipped');
-    }
-
-    function openAdmin() {
-        if(prompt("Admin Şifresi:") === "1234") {
-            document.getElementById('admin-panel').style.display = "block";
-        }
-    }
-    function closeAdmin() { document.getElementById('admin-panel').style.display = "none"; }
-    
-    function resetSystem() {
-        localStorage.clear();
-        alert("Sistem temizlendi. Sayfa yenileniyor...");
-        location.reload();
     }
 
     window.onload = () => {
