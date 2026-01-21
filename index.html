@@ -12,7 +12,6 @@
         }
         body { font-family: 'Inter', sans-serif; display: flex; margin: 0; height: 100vh; background: var(--bg-body); color: var(--text-main); overflow: hidden; }
         
-        /* SIDEBAR */
         #sidebar { width: 350px; background: var(--sidebar-bg); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 10; }
         .logo-area { padding: 20px; text-align: center; border-bottom: 1px solid var(--border); position: relative; }
         .logo-area img { max-width: 140px; cursor: pointer; }
@@ -29,7 +28,6 @@
         .cocktail-item:hover { transform: translateX(5px); border-color: var(--primary); }
         .active-item { background: var(--primary) !important; color: white !important; }
 
-        /* CONTENT */
         #content { flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
         .flip-card { width: 400px; height: 580px; perspective: 1000px; }
         .flip-card-inner { position: relative; width: 100%; height: 100%; transition: 0.6s; transform-style: preserve-3d; cursor: pointer; }
@@ -40,7 +38,6 @@
         .info-label { color: var(--primary); font-size: 11px; font-weight: 800; text-transform: uppercase; margin-top: 15px; display: block; border-left: 2px solid var(--primary); padding-left: 8px; }
         .info-detail { font-size: 14px; margin-top: 5px; white-space: pre-line; color: var(--text-sub); line-height: 1.5; }
 
-        /* ADMIN PANEL OVERLAY */
         #admin-panel { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0a0e14; z-index: 1000; display: none; padding: 40px; box-sizing: border-box; overflow-y: auto; }
         .admin-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; margin-top: 20px; }
         .admin-item { background: #1c222d; padding: 15px; border-radius: 12px; border: 1px solid #333; }
@@ -53,22 +50,18 @@
 <div id="admin-panel">
     <button class="close-admin" onclick="closeAdmin()">AYARLARI KAYDET VE KAPAT</button>
     <h1 style="color: var(--primary);">⚙️ Menü Yönetimi</h1>
-    
     <div class="category-manager">
         <h3>1. Kategori Ekle</h3>
         <input type="text" id="newCatInput" placeholder="Kategori adı..." class="search-box" style="width: 200px; margin-right: 10px;">
         <button class="cat-btn" onclick="addNewCategory()">+ EKLE</button>
         <div id="admin-cat-list" class="category-filters" style="margin-top: 15px;"></div>
     </div>
-
     <h3>2. Kokteylleri Kategorilere Ata</h3>
     <div id="admin-cocktail-grid" class="admin-grid"></div>
 </div>
 
 <div id="sidebar">
-    <div class="logo-area">
-        <img src="images/merit_logo.jpg" alt="Logo" onclick="openAdmin()">
-    </div>
+    <div class="logo-area"><img src="images/merit_logo.jpg" alt="Logo" onclick="openAdmin()"></div>
     <div class="controls">
         <input type="text" class="search-box" id="searchInput" placeholder="Kokteyl ara..." onkeyup="renderMenu()">
         <div class="category-filters" id="main-cat-filters"></div>
@@ -128,19 +121,27 @@
         { name: "Dulce Sueno", ingredients: "POMEGRANATE, CITRUS, RASPBERRY, FOAMER", method: "METHOD: SHAKE\nGLASS: LONG DRINK\nGARNISH: ROSE" }
     ];
 
+    // ÖNCEDEN TANIMLANMIŞ SABİT KATEGORİLER VE EŞLEŞTİRMELER
     let categories = JSON.parse(localStorage.getItem('merit_cats')) || ["All", "Classic", "Signature", "Mocktail"];
     let mappings = JSON.parse(localStorage.getItem('merit_mappings')) || {
-        "Stalker": ["Mocktail"], "Okami": ["Mocktail"], "Dulce Sueno": ["Mocktail"], "Negroni": ["Classic"] 
+        "Pornstar Martini": ["Classic", "Signature"], "Espresso Martini": ["Classic"], "Dry Martini": ["Classic"],
+        "Negroni": ["Classic"], "Old Fashioned": ["Classic"], "Manhattan": ["Classic"], "Hugo Spritz": ["Classic"],
+        "Lemoncello Spritz": ["Classic"], "Aperol Spritz": ["Classic"], "Mojito": ["Classic"], "Gin Fizz": ["Classic"],
+        "Margarita": ["Classic"], "Mai Tai": ["Classic"], "New York Sour": ["Classic"], "Old Cuban": ["Classic"],
+        "Lynchburg Lemonada": ["Classic"], "Long Island Ice Tea": ["Classic"], "Daiquiri": ["Classic"],
+        "Cosmopolitan": ["Classic"], "Bloody Marry": ["Classic"], "Aperol Sour": ["Signature"], "Amaretto Sour": ["Signature"],
+        "Pina Colada": ["Classic"], "Chili Passion": ["Signature"], "Whiskey Sour": ["Classic"], "White Russian": ["Classic"],
+        "Sex on the Beach": ["Classic"], "Green Apple Martini": ["Signature"], "Serenity": ["Signature"],
+        "Spectrum": ["Signature"], "Stalker": ["Mocktail"], "Okami": ["Mocktail"], "Dulce Sueno": ["Mocktail"]
     };
+
     let currentCat = "All";
 
     function openAdmin() {
         if(prompt("Admin Şifresi:") === "1234") {
             document.getElementById('admin-panel').style.display = "block";
             renderAdmin();
-        } else {
-            alert("Hatalı Şifre!");
-        }
+        } else { alert("Hatalı Şifre!"); }
     }
 
     function closeAdmin() { 
