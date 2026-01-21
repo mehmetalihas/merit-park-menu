@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Merit Park Cocktail Menu</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0288D1; --bg-body: #0a0e14; --bg-card: #1c222d;
+            --text-main: #fff; --text-sub: #b0b8c4; --border: rgba(255,255,255,0.1); --sidebar-bg: #131921;
+        }
+        body { font-family: 'Inter', sans-serif; display: flex; margin: 0; height: 100vh; background: var(--bg-body); color: var(--text-main); overflow: hidden; }
+        #sidebar { width: 350px; background: var(--sidebar-bg); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 10; }
+        .logo-area { padding: 20px; text-align: center; border-bottom: 1px solid var(--border); position: relative; }
+        .logo-area img { max-width: 140px; }
+        .controls { padding: 15px; border-bottom: 1px solid var(--border); }
+        .search-box { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border); background: #1c222d; color: #fff; outline: none; margin-bottom: 10px; box-sizing: border-box; }
+        .category-filters { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 5px; }
+        .cat-btn { padding: 6px 12px; font-size: 11px; border-radius: 20px; border: 1px solid var(--primary); background: transparent; color: var(--primary); cursor: pointer; transition: 0.2s; }
+        .cat-btn.active { background: var(--primary); color: white; }
+        .menu-scroll-area { flex-grow: 1; overflow-y: auto; padding: 15px; }
+        .cocktail-item { padding: 12px; margin-bottom: 8px; cursor: pointer; border-radius: 10px; background: var(--bg-card); border: 1px solid var(--border); font-weight: 600; font-size: 11px; text-transform: uppercase; transition: 0.2s; }
+        .cocktail-item:hover { transform: translateX(5px); border-color: var(--primary); }
+        .active-item { background: var(--primary) !important; color: white !important; }
+        #content { flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; position: relative; }
+        .flip-card { width: 400px; height: 580px; perspective: 1000px; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; transition: 0.6s; transform-style: preserve-3d; cursor: pointer; }
+        .flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 20px; background: var(--bg-card); padding: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.5); box-sizing: border-box; }
+        .flip-card-front img { width: 100%; height: 100%; object-fit: cover; border-radius: 12px; }
+        .flip-card-back { transform: rotateY(180deg); overflow-y: auto; border: 2px solid var(--primary); }
+        .info-label { color: var(--primary); font-size: 11px; font-weight: 800; text-transform: uppercase; margin-top: 15px; display: block; border-left: 2px solid var(--primary); padding-left: 8px; }
+        .info-detail { font-size: 14px; margin-top: 5px; white-space: pre-line; color: var(--text-sub); line-height: 1.5; }
+    </style>
+</head>
+<body>
+
+<div id="sidebar">
+    <div class="logo-area"><img src="images/merit_logo.jpg" alt="Logo"></div>
+    <div class="controls">
+        <input type="text" class="search-box" id="searchInput" placeholder="Kokteyl ara..." onkeyup="renderMenu()">
+        <div class="category-filters" id="cat-container"></div>
+    </div>
+    <div id="menu" class="menu-scroll-area"></div>
+</div>
+
+<div id="content">
+    <div class="flip-card" id="card" onclick="this.classList.toggle('flipped')">
+        <div class="flip-card-inner">
+            <div class="flip-card-front"><img id="display-img" src=""></div>
+            <div class="flip-card-back">
+                <h2 id="back-name" style="margin:0; border-bottom: 2px solid var(--primary); padding-bottom: 10px; font-size: 22px;"></h2>
+                <span class="info-label">İÇERİK / RECIPE</span>
+                <p class="info-detail" id="back-ingredients"></p>
+                <span class="info-label">HAZIRLANIŞ & SUNUM</span>
+                <p class="info-detail" id="back-method"></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const cocktails = [
+        { name: "Pornstar Martini", cats: ["Classic", "Signature"], ingredients: "VODKA 4 CL, APEROL 1.5 CL, VANILLA SYRUP 1 CL, PINEAPPLE JUICE 2 CL, PASSION PUREE 1 CL, CITRUS BLEND 3 CL, FOAMER 1 CL\n\n* 50 ML PROSECCO ON SIDE", method: "METHOD: HARD SHAKE\nGLASS: COUPET GLASS\nGARNISH: DRY ORANGE" },
+        { name: "Espresso Martini", cats: ["Classic"], ingredients: "VODKA 5 CL, COFFEE LIQUEUR 3 CL, ESPRESSO SINGLE SHOT, SYMPLE SYRUP 0.75 CL", method: "METHOD: HARD SHAKE\nGLASS: COUPE GLASS\nGARNISH: COFFEE BEANS" },
+        { name: "Dry Martini", cats: ["Classic"], ingredients: "GIN 6 CL, VERMOUTH EXT DRY 1 CL", method: "METHOD: STIR\nGLASS: MARTINI UP\nGARNISH: LEMON PEEL & OLIVE" },
+        { name: "Negroni", cats: ["Classic"], ingredients: "GIN 3 CL, CAMPARI 3 CL, SWEET VERMOUTH 3 CL", method: "METHOD: STIR\nGLASS: ON THE ROCKS\nGARNISH: ORANGE PEEL" },
+        { name: "Old Fashioned", cats: ["Classic"], ingredients: "BOURBON 6 CL, ANGOSTURA BITTER, PLAIN WATER, SUGAR CUBE", method: "METHOD: MUDDLE\nGLASS: ON THE ROCKS\nGARNISH: CHERRY & ORANGE PEEL" },
+        { name: "Manhattan", cats: ["Classic"], ingredients: "BOURBON 5 CL, SWEET VERMOUTH 2 CL, ANGOSTURA BITTER", method: "METHOD: STIR\nGLASS: COUPE GLASS\nGARNISH: ORANGE PEEL & CHERRY" },
+        { name: "Hugo Spritz", cats: ["Classic"], ingredients: "ELDERFLOWER SYRUP 2.5 CL, PROSECCO 9 CL, SPLASH OF SODA", method: "METHOD: BUILD UP\nGLASS: WINE GLASS\nGARNISH: MINT LEAVES & LIME" },
+        { name: "Lemoncello Spritz", cats: ["Classic"], ingredients: "LEMONCELLO 5 CL, PROSECCO 8 CL, SPLASH OF SODA", method: "METHOD: BUILD UP\nGLASS: WINE GLASS\nGARNISH: BASIL LEAVES & LEMON PEEL" },
+        { name: "Aperol Spritz", cats: ["Classic"], ingredients: "APEROL 4.5 CL, PROSECCO 8 CL, SPLASH OF SODA", method: "METHOD: BUILD UP\nGLASS: WINE GLASS\nGARNISH: SLICE ORANGE" },
+        { name: "Mojito", cats: ["Classic"], ingredients: "RUM 4 CL, LIME WEDGES 3, MINT LEAVES 8, LEMON JUICE 2 CL, SUGAR SYRUP 1.5 CL, SODA", method: "METHOD: MUDDLE\nGLASS: CASABLANCA GLASS\nGARNISH: MINT LEAVES" },
+        { name: "Gin Fizz", cats: ["Classic"], ingredients: "GIN 4.5 CL, LEMON JUICE 3 CL, SUGAR SYRUP 1 CL, SPLASH OF SODA", method: "METHOD: SHAKE\nGLASS: ON THE ROCKS\nGARNISH: LIME" },
+        { name: "Margarita", cats: ["Classic"], ingredients: "TEQUILA 4 CL, TRIPLE SEC 2 CL, LEMON JUICE 4 CL, AGAVE 0.5 CL", method: "METHOD: HARD SHAKE\nGLASS: MARGARITA GLASS\nGARNISH: SALT RIM & LIME" },
+        { name: "Mai Tai", cats: ["Classic"], ingredients: "WHITE RUM 2.5 CL, TRIPLE SEC 1.5 CL, ORGEAT SYRUP 2 CL, LEMON JUICE 2 CL, PINEAPPLE JUICE 2.5 CL, BLACK RUM", method: "METHOD: HARD SHAKE\nGLASS: LONG DRINK GLASS\nGARNISH: ALMOND CRACKER" },
+        { name: "New York Sour", cats: ["Classic"], ingredients: "BOURBON 6 CL, SIMPLE SYRUP 2 CL, CITRUS BLEND 5 CL, FOAMER 1 CL, RED WINE", method: "METHOD: HARD SHAKE\nGLASS: ON THE ROCKS\nGARNISH: CHERRY" },
+        { name: "Old Cuban", cats: ["Classic"], ingredients: "BLACK RUM 4.5 CL, CITRUS BLEND 2.5 CL, SIMPLE SYRUP 2 CL, BITTERS, MINT LEAVES, PROSECCO", method: "METHOD: HARD SHAKE\nGLASS: SNIFFER GLASS\nGARNISH: MINT LEAVES & CHERRY" },
+        { name: "Lynchburg Lemonada", cats: ["Classic"], ingredients: "BOURBON 4 CL, TRIPLE SEC 2 CL, SIMPLE SYRUP 0.5 CL, CITRUS BLEND 4 CL, SPRITE", method: "METHOD: HARD SHAKE\nGLASS: ON THE ROCKS\nGARNISH: LIME & MINT" },
+        { name: "Long Island Ice Tea", cats: ["Classic"], ingredients: "VODKA 1.5 CL, GIN 1.5 CL, RUM 1.5 CL, TRIPLE SEC 1.5 CL, TEQUILA 1.5 CL, SIMPLE SYRUP 1.5 CL, LEMON JUICE 3 CL, COLA", method: "METHOD: HARD SHAKE\nGLASS: LONG DRINK GLASS\nGARNISH: LIME" },
+        { name: "Daiquiri", cats: ["Classic"], ingredients: "RUM 5 CL, LEMON JUICE 3 CL, SUGAR 2 BAR SPOON", method: "METHOD: HARD SHAKE\nGLASS: MARTINI UP\nGARNISH: LEMON PEEL" },
+        { name: "Cosmopolitan", cats: ["Classic"], ingredients: "VODKA 4 CL, TRIPLE SEC 1.5 CL, CRANBERRY JUICE 3 CL, LEMON JUICE 2 CL", method: "METHOD: HARD SHAKE\nGLASS: MARTINI UP\nGARNISH: ORANGE PEEL" },
+        { name: "Bloody Marry", cats: ["Classic"], ingredients: "VODKA 4.5 CL, TOMATO JUICE 9 CL, LEMON JUICE 2 CL, SPICES", method: "METHOD: STIR\nGLASS: CASABLANCA GLASS\nGARNISH: CUCUMBER & TOMATO" },
+        { name: "Aperol Sour", cats: ["Signature"], ingredients: "GARRONE SPRITZ 4 CL, GIN 2 CL, CITRUS BLEND 5 CL, ROSE SYRUP 1.5 CL, FOAMER 1 CL", method: "METHOD: HARD SHAKE\nGLASS: COUPE GLASS\nGARNISH: BABY ROSE" },
+        { name: "Amaretto Sour", cats: ["Signature"], ingredients: "AMARETTO 4 CL, BOURBON 2 CL, CITRUS BLEND 6 CL, SALTED CARAMEL 1 CL, ORGEAT 2 CL", method: "METHOD: HARD SHAKE\nGLASS: ON THE ROCKS\nGARNISH: ALMOND CRACKER" },
+        { name: "Pina Colada", cats: ["Classic"], ingredients: "RUM 4 CL, BATIDA DE COCO 2.5 CL, COCO SYRUP 1.5 CL, PINEAPPLE JUICE 4 CL, MILK 6 CL", method: "METHOD: HARD SHAKE\nGLASS: AMORE WINE GLASS\nGARNISH: DRY PINEAPPLE" },
+        { name: "Chili Passion", cats: ["Signature"], ingredients: "CHILI TEQUILA 2 CL, BLANCO TEQUILA 2 CL, APEROL 1.5 CL, CITRUS BLEND 5 CL, PASSION PUREE 2 CL", method: "METHOD: HARD SHAKE\nGLASS: ALLEGRA GLASS\nGARNISH: CHILI THREADS" },
+        { name: "Whiskey Sour", cats: ["Classic"], ingredients: "BOURBON 6 CL, CITRUS BLEND 9 CL, SIMPLE SYRUP 1 CL, BITTER, FOAMER 1 CL", method: "METHOD: HARD SHAKE\nGLASS: ON THE ROCKS\nGARNISH: DRY LEMON" },
+        { name: "White Russian", cats: ["Classic"], ingredients: "VODKA 5 CL, KAHLUA 2.5 CL, TOP UP MILK CREAM", method: "METHOD: BUILD UP\nGLASS: ON THE ROCKS\nGARNISH: GRATED CHOCOLATE" },
+        { name: "Sex on the Beach", cats: ["Classic"], ingredients: "VODKA 4 CL, PEACH SCHNAPPS 2 CL, ORANGE JUICE 8 CL, GRENADINE 2 CL", method: "METHOD: HARD SHAKE\nGLASS: PARFAIT GLASS\nGARNISH: DRY GRAPEFRUIT" },
+        { name: "Green Apple Martini", cats: ["Signature"], ingredients: "VODKA 3 CL, LEMON JUICE 3 CL, APPLE SYRUP 1 CL, APPLE PUREE 1.5 CL, FOAMER 1 CL", method: "METHOD: HARD SHAKE\nGLASS: COUPE GLASS\nGARNISH: BASIL LEAVES" },
+        { name: "Serenity", cats: ["Signature"], ingredients: "TEQUILA HIBISCUS 4 CL, HIBISCUS SYRUP 4 CL, CITRUS BLEND 2.5 CL, TANGERINE PUREE 1 CL, FOAMER 1 CL", method: "METHOD: HARD SHAKE\nGLASS: AMARO WINE GLASS\nGARNISH: BASIL LEAVES" },
+        { name: "Spectrum", cats: ["Signature"], ingredients: "GIN LEMONGRASS 5 CL, CITRUS BLEND 5 CL, VANILLA SYRUP 1 CL, YUZU PUREE 1 CL, BITTER", method: "METHOD: HARD SHAKE\nGLASS: ALLEGRA GLASS\nGARNISH: ALMOND CRACKER" },
+        { name: "Stalker", cats: ["Mocktail"], ingredients: "APPLE JUICE 6 CL, LEMON JUICE 3 CL, CUCUMBER SYRUP 1 CL, APPLE PUREE 2 CL", method: "METHOD: HARD SHAKE\nGLASS: WINE GLASS\nGARNISH: THYME & CUCUMBER" },
+        { name: "Okami", cats: ["Mocktail"], ingredients: "GRAPEFRUIT JUICE 4 CL, CITRUS BLEND 4 CL, STRAWBERRY PUREE 2 CL, CHILI SAUCE 1.5 CL", method: "METHOD: HARD SHAKE\nGLASS: ON THE ROCKS\nGARNISH: CHILI THREADS" },
+        { name: "Dulce Sueno", cats: ["Mocktail"], ingredients: "POMEGRANATE JUICE 10 CL, CITRUS BLEND 5 CL, RASPBERRY PUREE 2 CL, FOAMER 1 CL", method: "METHOD: HARD SHAKE\nGLASS: LONG DRINK GLASS\nGARNISH: BABY ROSE" }
+    ];
+
+    let currentCat = "All";
+
+    function renderMenu() {
+        const menu = document.getElementById('menu');
+        const filterText = document.getElementById('searchInput').value.toLowerCase();
+        menu.innerHTML = '';
+        cocktails.forEach(c => {
+            const matchesSearch = c.name.toLowerCase().includes(filterText);
+            const matchesCat = currentCat === "All" || c.cats.includes(currentCat);
+            if(matchesSearch && matchesCat) {
+                const div = document.createElement('div');
+                div.className = 'cocktail-item';
+                div.innerText = c.name;
+                div.onclick = () => selectCocktail(c, div);
+                menu.appendChild(div);
+            }
+        });
+    }
+
+    function selectCocktail(c, el) {
+        document.querySelectorAll('.cocktail-item').forEach(i => i.classList.remove('active-item'));
+        if(el) el.classList.add('active-item');
+        document.getElementById('back-name').innerText = c.name;
+        document.getElementById('back-ingredients').innerText = c.ingredients;
+        document.getElementById('back-method').innerText = c.method;
+        const imgName = c.name.toLowerCase().replace(/\s+/g, '') + ".jpg";
+        document.getElementById('display-img').src = "images/" + imgName;
+        document.getElementById('card').classList.remove('flipped');
+    }
+
+    function setupFilters() {
+        const container = document.getElementById('cat-container');
+        const cats = ["All", "Classic", "Signature", "Mocktail"];
+        cats.forEach(cat => {
+            const btn = document.createElement('button');
+            btn.className = `cat-btn ${currentCat === cat ? 'active' : ''}`;
+            btn.innerText = cat === "All" ? "Hepsi" : cat;
+            btn.onclick = () => {
+                currentCat = cat;
+                setupFilters();
+                renderMenu();
+            };
+            container.appendChild(btn);
+        });
+    }
+
+    window.onload = () => {
+        setupFilters();
+        renderMenu();
+        const random = cocktails[Math.floor(Math.random() * cocktails.length)];
+        selectCocktail(random, null);
+    }
+</script>
+</body>
+</html>
