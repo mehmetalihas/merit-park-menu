@@ -11,23 +11,18 @@
             --text-main: #fff; --text-sub: #b0b8c4; --border: rgba(255,255,255,0.1); --sidebar-bg: #131921;
         }
         body { font-family: 'Inter', sans-serif; display: flex; margin: 0; height: 100vh; background: var(--bg-body); color: var(--text-main); overflow: hidden; }
-        
         #sidebar { width: 350px; background: var(--sidebar-bg); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 10; }
         .logo-area { padding: 20px; text-align: center; border-bottom: 1px solid var(--border); position: relative; }
         .logo-area img { max-width: 140px; cursor: pointer; }
-        
         .controls { padding: 15px; border-bottom: 1px solid var(--border); }
         .search-box { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border); background: #1c222d; color: #fff; outline: none; margin-bottom: 10px; box-sizing: border-box; }
-        
         .category-filters { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 5px; }
         .cat-btn { padding: 6px 12px; font-size: 11px; border-radius: 20px; border: 1px solid var(--primary); background: transparent; color: var(--primary); cursor: pointer; transition: 0.2s; }
         .cat-btn.active { background: var(--primary); color: white; }
-
         .menu-scroll-area { flex-grow: 1; overflow-y: auto; padding: 15px; }
         .cocktail-item { padding: 12px; margin-bottom: 8px; cursor: pointer; border-radius: 10px; background: var(--bg-card); border: 1px solid var(--border); font-weight: 600; font-size: 11px; text-transform: uppercase; transition: 0.2s; }
         .cocktail-item:hover { transform: translateX(5px); border-color: var(--primary); }
         .active-item { background: var(--primary) !important; color: white !important; }
-
         #content { flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
         .flip-card { width: 400px; height: 580px; perspective: 1000px; }
         .flip-card-inner { position: relative; width: 100%; height: 100%; transition: 0.6s; transform-style: preserve-3d; cursor: pointer; }
@@ -37,7 +32,6 @@
         .flip-card-back { transform: rotateY(180deg); overflow-y: auto; border: 2px solid var(--primary); }
         .info-label { color: var(--primary); font-size: 11px; font-weight: 800; text-transform: uppercase; margin-top: 15px; display: block; border-left: 2px solid var(--primary); padding-left: 8px; }
         .info-detail { font-size: 14px; margin-top: 5px; white-space: pre-line; color: var(--text-sub); line-height: 1.5; }
-
         #admin-panel { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0a0e14; z-index: 1000; display: none; padding: 40px; box-sizing: border-box; overflow-y: auto; }
         .admin-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; margin-top: 20px; }
         .admin-item { background: #1c222d; padding: 15px; border-radius: 12px; border: 1px solid #333; }
@@ -121,132 +115,4 @@
         { name: "Dulce Sueno", ingredients: "POMEGRANATE, CITRUS, RASPBERRY, FOAMER", method: "METHOD: SHAKE\nGLASS: LONG DRINK\nGARNISH: ROSE" }
     ];
 
-    // ÖNCEDEN TANIMLANMIŞ SABİT KATEGORİLER VE EŞLEŞTİRMELER
-    let categories = JSON.parse(localStorage.getItem('merit_cats')) || ["All", "Classic", "Signature", "Mocktail"];
-    let mappings = JSON.parse(localStorage.getItem('merit_mappings')) || {
-        "Pornstar Martini": ["Classic", "Signature"], "Espresso Martini": ["Classic"], "Dry Martini": ["Classic"],
-        "Negroni": ["Classic"], "Old Fashioned": ["Classic"], "Manhattan": ["Classic"], "Hugo Spritz": ["Classic"],
-        "Lemoncello Spritz": ["Classic"], "Aperol Spritz": ["Classic"], "Mojito": ["Classic"], "Gin Fizz": ["Classic"],
-        "Margarita": ["Classic"], "Mai Tai": ["Classic"], "New York Sour": ["Classic"], "Old Cuban": ["Classic"],
-        "Lynchburg Lemonada": ["Classic"], "Long Island Ice Tea": ["Classic"], "Daiquiri": ["Classic"],
-        "Cosmopolitan": ["Classic"], "Bloody Marry": ["Classic"], "Aperol Sour": ["Signature"], "Amaretto Sour": ["Signature"],
-        "Pina Colada": ["Classic"], "Chili Passion": ["Signature"], "Whiskey Sour": ["Classic"], "White Russian": ["Classic"],
-        "Sex on the Beach": ["Classic"], "Green Apple Martini": ["Signature"], "Serenity": ["Signature"],
-        "Spectrum": ["Signature"], "Stalker": ["Mocktail"], "Okami": ["Mocktail"], "Dulce Sueno": ["Mocktail"]
-    };
-
-    let currentCat = "All";
-
-    function openAdmin() {
-        if(prompt("Admin Şifresi:") === "1234") {
-            document.getElementById('admin-panel').style.display = "block";
-            renderAdmin();
-        } else { alert("Hatalı Şifre!"); }
-    }
-
-    function closeAdmin() { 
-        document.getElementById('admin-panel').style.display = "none"; 
-        updateMainFilters();
-        renderMenu();
-    }
-
-    function addNewCategory() {
-        const val = document.getElementById('newCatInput').value.trim();
-        if(val && !categories.includes(val)) {
-            categories.push(val);
-            localStorage.setItem('merit_cats', JSON.stringify(categories));
-            document.getElementById('newCatInput').value = '';
-            renderAdmin();
-        }
-    }
-
-    function renderAdmin() {
-        const catList = document.getElementById('admin-cat-list');
-        catList.innerHTML = '';
-        categories.forEach(cat => {
-            if(cat === "All") return;
-            const btn = document.createElement('button');
-            btn.className = 'cat-btn';
-            btn.innerText = cat + " ✕";
-            btn.onclick = () => {
-                categories = categories.filter(c => c !== cat);
-                localStorage.setItem('merit_cats', JSON.stringify(categories));
-                renderAdmin();
-            };
-            catList.appendChild(btn);
-        });
-
-        const grid = document.getElementById('admin-cocktail-grid');
-        grid.innerHTML = '';
-        baseCocktails.forEach(c => {
-            const div = document.createElement('div');
-            div.className = 'admin-item';
-            const activeCats = mappings[c.name] || [];
-            let checks = '';
-            categories.forEach(cat => {
-                if(cat === "All") return;
-                const checked = activeCats.includes(cat) ? 'checked' : '';
-                checks += `<label style="display:block; margin-top:4px;"><input type="checkbox" ${checked} onchange="toggleMap('${c.name}', '${cat}')"> ${cat}</label>`;
-            });
-            div.innerHTML = `<strong>${c.name}</strong><hr style="opacity:0.1">${checks}`;
-            grid.appendChild(div);
-        });
-    }
-
-    function toggleMap(cName, cat) {
-        if(!mappings[cName]) mappings[cName] = [];
-        if(mappings[cName].includes(cat)) mappings[cName] = mappings[cName].filter(i => i !== cat);
-        else mappings[cName].push(cat);
-        localStorage.setItem('merit_mappings', JSON.stringify(mappings));
-    }
-
-    function updateMainFilters() {
-        const cont = document.getElementById('main-cat-filters');
-        cont.innerHTML = '';
-        categories.forEach(cat => {
-            const btn = document.createElement('button');
-            btn.className = `cat-btn ${currentCat === cat ? 'active' : ''}`;
-            btn.innerText = cat === "All" ? "Hepsi" : cat;
-            btn.onclick = () => { currentCat = cat; updateMainFilters(); renderMenu(); };
-            cont.appendChild(btn);
-        });
-    }
-
-    function renderMenu() {
-        const menu = document.getElementById('menu');
-        const search = document.getElementById('searchInput').value.toLowerCase();
-        menu.innerHTML = '';
-        baseCocktails.forEach(c => {
-            const matchesSearch = c.name.toLowerCase().includes(search);
-            const myCats = mappings[c.name] || [];
-            const matchesCat = currentCat === "All" || myCats.includes(currentCat);
-            if(matchesSearch && matchesCat) {
-                const div = document.createElement('div');
-                div.className = 'cocktail-item';
-                div.innerText = c.name;
-                div.onclick = () => selectCocktail(c, div);
-                menu.appendChild(div);
-            }
-        });
-    }
-
-    function selectCocktail(c, el) {
-        document.querySelectorAll('.cocktail-item').forEach(i => i.classList.remove('active-item'));
-        if(el) el.classList.add('active-item');
-        document.getElementById('back-name').innerText = c.name;
-        document.getElementById('back-ingredients').innerText = c.ingredients;
-        document.getElementById('back-method').innerText = c.method;
-        const img = c.name.toLowerCase().replace(/\s+/g, '') + ".jpg";
-        document.getElementById('display-img').src = "images/" + img;
-        document.getElementById('card').classList.remove('flipped');
-    }
-
-    window.onload = () => {
-        updateMainFilters();
-        renderMenu();
-        const rand = baseCocktails[Math.floor(Math.random() * baseCocktails.length)];
-        selectCocktail(rand, null);
-    }
-</script>
-</body>
-</html>
+    //
