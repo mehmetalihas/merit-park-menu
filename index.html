@@ -7,63 +7,60 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #4fc3f7; --primary-dark: #0288D1; --bg-dark: #05070a;
-            --card-bg: rgba(28, 34, 45, 0.8); --text-main: #f8f9fa; --text-sub: #a0a6b1;
-            --glass: rgba(255, 255, 255, 0.03); --border: rgba(255, 255, 255, 0.08);
+            --primary: #4fc3f7; --bg-dark: #05070a;
+            --card-bg: #1c222d; --text-main: #f8f9fa; --text-sub: #a0a6b1;
+            --border: rgba(255, 255, 255, 0.08);
         }
         
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; background: var(--bg-dark); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
 
-        /* --- SIDEBAR (MODERNIZED) --- */
-        #sidebar { width: 380px; background: #0d1117; border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 100; transition: 0.3s; }
-        .logo-area { padding: 25px; text-align: center; background: linear-gradient(to bottom, rgba(2, 136, 209, 0.1), transparent); }
-        .logo-area img { max-width: 130px; filter: drop-shadow(0 0 10px rgba(79, 195, 247, 0.3)); }
-        
-        .controls { padding: 20px; border-bottom: 1px solid var(--border); }
-        .search-box { width: 100%; padding: 14px 18px; border-radius: 14px; border: 1px solid var(--border); background: var(--glass); color: #fff; outline: none; transition: 0.3s; font-size: 15px; }
-        .search-box:focus { border-color: var(--primary); background: rgba(255,255,255,0.08); }
-        
-        .category-filters { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 15px; }
-        .cat-btn { padding: 8px 16px; font-size: 11px; font-weight: 600; border-radius: 12px; border: 1px solid var(--border); background: var(--glass); color: var(--text-sub); cursor: pointer; transition: 0.3s; }
-        .cat-btn.active { background: var(--primary); color: #000; border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(79, 195, 247, 0.3); }
+        /* MASAÜSTÜ YAPI */
+        #sidebar { width: 380px; background: #0d1117; border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 100; flex-shrink: 0; }
+        #content { flex-grow: 1; display: flex; align-items: center; justify-content: center; padding: 40px; position: relative; }
 
-        .menu-scroll-area { flex-grow: 1; overflow-y: auto; padding: 20px; scrollbar-width: none; }
-        .menu-scroll-area::-webkit-scrollbar { display: none; }
-        
-        .cocktail-item { padding: 16px; margin-bottom: 12px; cursor: pointer; border-radius: 16px; background: var(--glass); border: 1px solid var(--border); font-weight: 600; font-size: 12px; letter-spacing: 0.5px; text-transform: uppercase; transition: 0.3s; display: flex; align-items: center; justify-content: space-between; }
-        .cocktail-item::after { content: '→'; opacity: 0; transition: 0.3s; }
-        .cocktail-item:hover, .active-item { background: linear-gradient(45deg, rgba(79, 195, 247, 0.1), transparent); border-color: var(--primary); transform: translateX(8px); }
-        .active-item::after { opacity: 1; color: var(--primary); }
-
-        /* --- CONTENT AREA (MODERNIZED) --- */
-        #content { flex-grow: 1; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at center, #111827 0%, #05070a 100%); padding: 40px; }
-        
-        .flip-card { width: 100%; max-width: 420px; height: 620px; perspective: 2000px; }
-        .flip-card-inner { position: relative; width: 100%; height: 100%; transition: 0.8s cubic-bezier(0.4, 0, 0.2, 1); transform-style: preserve-3d; }
-        .flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
-        
-        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 30px; background: #1c222d; padding: 30px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.7); border: 1px solid var(--border); box-sizing: border-box; }
-        
-        .flip-card-front img { width: 100%; height: 100%; object-fit: cover; border-radius: 20px; filter: brightness(0.9); transition: 0.5s; }
-        .flip-card:hover .flip-card-front img { filter: brightness(1.1); }
-        
-        .flip-card-back { transform: rotateY(180deg); background: linear-gradient(135deg, #1c222d 0%, #0d1117 100%); overflow-y: auto; border: 1.5px solid var(--primary); }
-        
-        .info-label { color: var(--primary); font-size: 12px; font-weight: 800; text-transform: uppercase; margin-top: 25px; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; }
-        .info-label::before { content: ''; width: 4px; height: 14px; background: var(--primary); border-radius: 2px; }
-        .info-detail { font-size: 15px; margin-top: 10px; white-space: pre-line; color: var(--text-sub); line-height: 1.6; font-weight: 300; }
-
-        /* --- MOBILE OPTIMIZATION --- */
-        @media (max-width: 525px) {
-            body { flex-direction: column; overflow-y: auto; height: auto; }
-            #sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--border); position: sticky; top: 0; }
-            .menu-scroll-area { height: 200px; padding: 15px; } /* Liste alanı genişletildi */
-            #content { padding: 30px 20px; min-height: 700px; }
-            .flip-card { height: 580px; }
-            .logo-area { padding: 15px; }
-            .logo-area img { max-width: 100px; }
+        /* MOBİLDE ÜST PANEL YAPISI */
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+            #sidebar { 
+                width: 100%; 
+                height: 38vh; /* Ekranın üst kısmını kaplar */
+                border-right: none; 
+                border-bottom: 2px solid var(--primary);
+                overflow-y: auto; /* Tüm sidebar kendi içinde kayar */
+            }
+            #content { 
+                height: 62vh; /* Kart alanı her zaman görünür */
+                padding: 15px; 
+                overflow: hidden; 
+            }
+            .flip-card { height: 95% !important; max-height: 480px; }
         }
+
+        /* SIDEBAR İÇERİK */
+        .logo-area { padding: 15px; text-align: center; }
+        .logo-area img { max-width: 90px; }
+        .controls { padding: 0 15px 10px 15px; }
+        .search-box { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--border); background: rgba(255,255,255,0.05); color: #fff; outline: none; font-size: 14px; }
+        .category-filters { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+        .cat-btn { padding: 6px 12px; font-size: 10px; font-weight: 700; border-radius: 10px; border: 1px solid var(--border); background: transparent; color: var(--text-sub); cursor: pointer; }
+        .cat-btn.active { background: var(--primary); color: #000; border-color: var(--primary); }
+
+        /* LİSTE ALANI */
+        .menu-scroll-area { padding: 10px 15px; }
+        .cocktail-item { padding: 14px; margin-bottom: 8px; border-radius: 12px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); font-weight: 600; font-size: 11px; text-transform: uppercase; transition: 0.2s; }
+        .active-item { border-color: var(--primary); background: rgba(79, 195, 247, 0.1); color: var(--primary); }
+
+        /* KART TASARIMI */
+        .flip-card { width: 100%; max-width: 400px; height: 600px; perspective: 2000px; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; transition: 0.7s cubic-bezier(0.4, 0, 0.2, 1); transform-style: preserve-3d; cursor: pointer; }
+        .flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 25px; background: var(--card-bg); padding: 25px; box-sizing: border-box; box-shadow: 0 20px 40px rgba(0,0,0,0.6); border: 1px solid var(--border); }
+        .flip-card-front img { width: 100%; height: 100%; object-fit: cover; border-radius: 15px; }
+        .flip-card-back { transform: rotateY(180deg); overflow-y: auto; border: 1.5px solid var(--primary); }
+        
+        .info-label { color: var(--primary); font-size: 11px; font-weight: 800; text-transform: uppercase; margin-top: 20px; display: block; }
+        .info-detail { font-size: 14px; margin-top: 8px; white-space: pre-line; color: var(--text-sub); line-height: 1.5; }
     </style>
 </head>
 <body>
@@ -71,7 +68,7 @@
 <div id="sidebar">
     <div class="logo-area"><img src="images/merit_logo.jpg" alt="Logo"></div>
     <div class="controls">
-        <input type="text" class="search-box" id="searchInput" placeholder="Kokteyl İsmi Ara..." onkeyup="renderMenu()">
+        <input type="text" class="search-box" id="searchInput" placeholder="Kokteyl Ara..." onkeyup="renderMenu()">
         <div class="category-filters" id="main-cat-filters"></div>
     </div>
     <div class="menu-scroll-area" id="menu"></div>
@@ -82,18 +79,12 @@
         <div class="flip-card-inner">
             <div class="flip-card-front"><img id="display-img" src=""></div>
             <div class="flip-card-back">
-                <h2 id="back-name" style="margin:0; font-size: 28px; font-weight: 800; color: #fff;"></h2>
-                <div style="width: 50px; height: 4px; background: var(--primary); margin-top: 10px; border-radius: 2px;"></div>
-                
+                <h2 id="back-name" style="margin:0; font-size: 24px;"></h2>
+                <div style="width: 40px; height: 3px; background: var(--primary); margin: 10px 0;"></div>
                 <span class="info-label">İÇERİK / RECIPE</span>
                 <p class="info-detail" id="back-ingredients"></p>
-                
-                <span class="info-label">SUNUM / PRESENTATION</span>
+                <span class="info-label">HAZIRLANIŞ</span>
                 <p class="info-detail" id="back-method"></p>
-                
-                <div style="margin-top: 40px; text-align: center; opacity: 0.5; font-size: 12px;">
-                    🔄 Kartı çevirmek için dokunun
-                </div>
             </div>
         </div>
     </div>
@@ -162,8 +153,8 @@
             const matchesCat = currentCat === "All" || myCats.includes(currentCat);
             if(matchesSearch && matchesCat) {
                 const div = document.createElement('div');
-                div.className = 'cocktail-item';
-                div.innerHTML = `<span>${c.name}</span>`;
+                div.className = `cocktail-item ${document.getElementById('back-name').innerText === c.name ? 'active-item' : ''}`;
+                div.innerText = c.name;
                 div.onclick = () => selectCocktail(c, div);
                 menu.appendChild(div);
             }
@@ -172,15 +163,7 @@
 
     function selectCocktail(c, el) {
         document.querySelectorAll('.cocktail-item').forEach(i => i.classList.remove('active-item'));
-        if(el) {
-            el.classList.add('active-item');
-            if(window.innerWidth < 768) {
-                // Mobilde seçim yapınca hafifçe karta kaydır
-                setTimeout(() => {
-                    document.getElementById('content').scrollIntoView({behavior: "smooth"});
-                }, 100);
-            }
-        }
+        if(el) el.classList.add('active-item');
         document.getElementById('back-name').innerText = c.name;
         document.getElementById('back-ingredients').innerText = c.ingredients;
         document.getElementById('back-method').innerText = c.method;
@@ -197,5 +180,3 @@
 </script>
 </body>
 </html>
-
-
