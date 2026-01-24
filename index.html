@@ -7,32 +7,64 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #4fc3f7; --bg-dark: #05070a;
-            --card-bg: #1c222d; --text-main: #f8f9fa; --text-sub: #a0a6b1;
-            --border: rgba(255, 255, 255, 0.08);
+            --primary: #3b82f6;          /* Ana mavi - modern ve canlı */
+            --primary-soft: #60a5fa;     /* hover / hafif ton için */
+            --bg-main: #f8fafc;          /* Ana arka plan - çok açık gri-mavi beyaz */
+            --bg-card: #ffffff;          /* Kartlar için temiz beyaz */
+            --bg-sidebar: #f1f5f9;       /* Sidebar için biraz daha koyu açık gri */
+            --text-main: #0f172a;        /* Ana metin - koyu slate, çok okunaklı */
+            --text-sub: #475569;         /* İkincil metin - gri */
+            --border: #e2e8f0;           /* Yumuşak sınır rengi */
+            --shadow: 0 10px 25px -5px rgba(0,0,0,0.07), 0 5px 10px -5px rgba(0,0,0,0.04);
         }
-        
+
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; background: var(--bg-dark); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            margin: 0; 
+            background: var(--bg-main); 
+            color: var(--text-main); 
+            display: flex; 
+            height: 100vh; 
+            overflow: hidden; 
+        }
 
         /* MASAÜSTÜ YAPI */
-        #sidebar { width: 380px; background: #0d1117; border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 100; flex-shrink: 0; }
-        #content { flex-grow: 1; display: flex; align-items: center; justify-content: center; padding: 40px; position: relative; }
+        #sidebar { 
+            width: 380px; 
+            background: var(--bg-sidebar); 
+            border-right: 1px solid var(--border); 
+            display: flex; 
+            flex-direction: column; 
+            z-index: 100; 
+            flex-shrink: 0; 
+        }
+        #content { 
+            flex-grow: 1; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 40px; 
+            background: var(--bg-main); 
+            position: relative; 
+        }
 
         /* MOBİLDE ÜST PANEL YAPISI */
         @media (max-width: 768px) {
             body { flex-direction: column; }
             #sidebar { 
                 width: 100%; 
-                height: 38vh; /* Ekranın üst kısmını kaplar */
+                height: 38vh; 
                 border-right: none; 
-                border-bottom: 2px solid var(--primary);
-                overflow-y: auto; /* Tüm sidebar kendi içinde kayar */
+                border-bottom: 2px solid var(--primary); 
+                overflow-y: auto; 
+                background: var(--bg-sidebar); 
             }
             #content { 
-                height: 62vh; /* Kart alanı her zaman görünür */
+                height: 62vh; 
                 padding: 15px; 
                 overflow: hidden; 
+                background: var(--bg-card); 
             }
             .flip-card { height: 95% !important; max-height: 480px; }
         }
@@ -41,32 +73,125 @@
         .logo-area { padding: 15px; text-align: center; }
         .logo-area img { max-width: 90px; }
         .controls { padding: 0 15px 10px 15px; }
-        .search-box { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--border); background: rgba(255,255,255,0.05); color: #fff; outline: none; font-size: 14px; }
+        .search-box { 
+            width: 100%; 
+            padding: 12px; 
+            border-radius: 12px; 
+            border: 1px solid var(--border); 
+            background: var(--bg-card); 
+            color: var(--text-main); 
+            outline: none; 
+            font-size: 14px; 
+        }
         .category-filters { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
-        .cat-btn { padding: 6px 12px; font-size: 10px; font-weight: 700; border-radius: 10px; border: 1px solid var(--border); background: transparent; color: var(--text-sub); cursor: pointer; }
-        .cat-btn.active { background: var(--primary); color: #000; border-color: var(--primary); }
+        .cat-btn { 
+            padding: 6px 12px; 
+            font-size: 10px; 
+            font-weight: 700; 
+            border-radius: 10px; 
+            border: 1px solid var(--border); 
+            background: transparent; 
+            color: var(--text-sub); 
+            cursor: pointer; 
+            transition: all 0.2s;
+        }
+        .cat-btn:hover { 
+            border-color: var(--primary); 
+            color: var(--primary); 
+        }
+        .cat-btn.active { 
+            background: var(--primary); 
+            color: white; 
+            border-color: var(--primary); 
+        }
 
         /* LİSTE ALANI */
-        .menu-scroll-area { padding: 10px 15px; }
-        .cocktail-item { padding: 14px; margin-bottom: 8px; border-radius: 12px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); font-weight: 600; font-size: 11px; text-transform: uppercase; transition: 0.2s; }
-        .active-item { border-color: var(--primary); background: rgba(79, 195, 247, 0.1); color: var(--primary); }
+        .menu-scroll-area { 
+            padding: 10px 15px; 
+            overflow-y: auto; 
+            -webkit-overflow-scrolling: touch; 
+            overscroll-behavior: contain; 
+            flex-grow: 1; 
+        }
+        .cocktail-item { 
+            padding: 14px; 
+            margin-bottom: 8px; 
+            border-radius: 12px; 
+            background: var(--bg-card); 
+            border: 1px solid var(--border); 
+            font-weight: 600; 
+            font-size: 11px; 
+            text-transform: uppercase; 
+            transition: all 0.2s; 
+            color: var(--text-main); 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04); 
+        }
+        .cocktail-item:hover { 
+            border-color: var(--primary); 
+            background: rgba(59, 130, 246, 0.05); 
+        }
+        .active-item { 
+            border-color: var(--primary); 
+            background: rgba(59, 130, 246, 0.1); 
+            color: var(--primary); 
+            font-weight: 700; 
+        }
 
         /* KART TASARIMI */
         .flip-card { width: 100%; max-width: 400px; height: 600px; perspective: 2000px; }
-        .flip-card-inner { position: relative; width: 100%; height: 100%; transition: 0.7s cubic-bezier(0.4, 0, 0.2, 1); transform-style: preserve-3d; cursor: pointer; }
+        .flip-card-inner { 
+            position: relative; 
+            width: 100%; 
+            height: 100%; 
+            transition: 0.7s cubic-bezier(0.4, 0, 0.2, 1); 
+            transform-style: preserve-3d; 
+            cursor: pointer; 
+        }
         .flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
-        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 25px; background: var(--card-bg); padding: 25px; box-sizing: border-box; box-shadow: 0 20px 40px rgba(0,0,0,0.6); border: 1px solid var(--border); }
+        .flip-card-front, .flip-card-back { 
+            position: absolute; 
+            width: 100%; 
+            height: 100%; 
+            backface-visibility: hidden; 
+            border-radius: 25px; 
+            background: var(--bg-card); 
+            padding: 25px; 
+            box-sizing: border-box; 
+            box-shadow: var(--shadow); 
+            border: 1px solid var(--border); 
+        }
         .flip-card-front img { width: 100%; height: 100%; object-fit: cover; border-radius: 15px; }
-        .flip-card-back { transform: rotateY(180deg); overflow-y: auto; border: 1.5px solid var(--primary); }
+        .flip-card-back { 
+            transform: rotateY(180deg); 
+            overflow-y: auto; 
+            border: 1.5px solid var(--primary); 
+        }
         
-        .info-label { color: var(--primary); font-size: 11px; font-weight: 800; text-transform: uppercase; margin-top: 20px; display: block; }
-        .info-detail { font-size: 14px; margin-top: 8px; white-space: pre-line; color: var(--text-sub); line-height: 1.5; }
+        .info-label { 
+            color: var(--primary); 
+            font-size: 11px; 
+            font-weight: 800; 
+            text-transform: uppercase; 
+            margin-top: 20px; 
+            display: block; 
+        }
+        .info-detail { 
+            font-size: 14px; 
+            margin-top: 8px; 
+            white-space: pre-line; 
+            color: var(--text-sub); 
+            line-height: 1.5; 
+        }
     </style>
 </head>
 <body>
 
 <div id="sidebar">
-    <div class="logo-area"><img src="images/merit_logo.jpg" alt="Logo"></div>
+    <div class="logo-area">
+    <a href="#" onclick="window.location.reload(); return false;" style="display: block; text-decoration: none;">
+        <img src="images/merit_logo.jpg" alt="Merit Park Logo" style="max-width: 90px; cursor: pointer;">
+    </a>
+</div>
     <div class="controls">
         <input type="text" class="search-box" id="searchInput" placeholder="Kokteyl Ara..." onkeyup="renderMenu()">
         <div class="category-filters" id="main-cat-filters"></div>
@@ -127,7 +252,38 @@
         { name: "Dulce Sueno", ingredients: "POMEGRANATE, CITRUS, RASPBERRY, FOAMER", method: "METHOD: SHAKE\nGLASS: LONG DRINK\nGARNISH: ROSE" }
     ];
 
-    const mappings = {"Stalker":["Mocktail","ALKOLSÜZ"],"Okami":["Mocktail","ALKOLSÜZ"],"Dulce Sueno":["Mocktail","ALKOLSÜZ"],"Negroni":["Classic","CİN"],"Pornstar Martini":["VOTKA"],"Espresso Martini":["VOTKA"],"Dry Martini":["CİN"],"Old Fashioned":["VİSKİ"],"Manhattan":["VİSKİ"],"Mojito":["RUM"],"Gin Fizz":["CİN"],"Margarita":["TEKİLA"],"Mai Tai":["RUM"],"New York Sour":["VİSKİ"],"Old Cuban":["RUM"],"Long Island Ice Tea":["VOTKA","CİN","RUM","TEKİLA"],"Daiquiri":["RUM"],"Cosmopolitan":["VOTKA"],"Bloody Marry":["VOTKA"],"Aperol Sour":["CİN"],"Amaretto Sour":["VİSKİ"],"Pina Colada":["RUM"],"Chili Passion":["TEKİLA"],"Whiskey Sour":["VİSKİ"],"White Russian":["VOTKA"],"Sex on the Beach":["VOTKA"],"Green Apple Martini":["VOTKA"],"Serenity":["TEKİLA"],"Spectrum":["CİN"]};
+    const mappings = {
+        "Stalker": ["Mocktail", "ALKOLSÜZ"],
+        "Okami": ["Mocktail", "ALKOLSÜZ"],
+        "Dulce Sueno": ["Mocktail", "ALKOLSÜZ"],
+        "Negroni": ["Classic", "CİN"],
+        "Pornstar Martini": ["VOTKA"],
+        "Espresso Martini": ["VOTKA"],
+        "Dry Martini": ["CİN"],
+        "Old Fashioned": ["VİSKİ"],
+        "Manhattan": ["VİSKİ"],
+        "Mojito": ["RUM"],
+        "Gin Fizz": ["CİN"],
+        "Margarita": ["TEKİLA"],
+        "Mai Tai": ["RUM"],
+        "New York Sour": ["VİSKİ"],
+        "Old Cuban": ["RUM"],
+        "Long Island Ice Tea": ["VOTKA", "CİN", "RUM", "TEKİLA"],
+        "Daiquiri": ["RUM"],
+        "Cosmopolitan": ["VOTKA"],
+        "Bloody Marry": ["VOTKA"],
+        "Aperol Sour": ["CİN"],
+        "Amaretto Sour": ["VİSKİ"],
+        "Pina Colada": ["RUM"],
+        "Chili Passion": ["TEKİLA"],
+        "Whiskey Sour": ["VİSKİ"],
+        "White Russian": ["VOTKA"],
+        "Sex on the Beach": ["VOTKA"],
+        "Green Apple Martini": ["VOTKA"],
+        "Serenity": ["TEKİLA"],
+        "Spectrum": ["CİN"]
+    };
+
     const categories = ["All", "VOTKA", "VİSKİ", "CİN", "TEKİLA", "RUM", "ALKOLSÜZ"];
     let currentCat = "All";
 
@@ -151,7 +307,7 @@
             const matchesSearch = c.name.toLowerCase().includes(search);
             const myCats = mappings[c.name] || [];
             const matchesCat = currentCat === "All" || myCats.includes(currentCat);
-            if(matchesSearch && matchesCat) {
+            if (matchesSearch && matchesCat) {
                 const div = document.createElement('div');
                 div.className = `cocktail-item ${document.getElementById('back-name').innerText === c.name ? 'active-item' : ''}`;
                 div.innerText = c.name;
@@ -163,7 +319,7 @@
 
     function selectCocktail(c, el) {
         document.querySelectorAll('.cocktail-item').forEach(i => i.classList.remove('active-item'));
-        if(el) el.classList.add('active-item');
+        if (el) el.classList.add('active-item');
         document.getElementById('back-name').innerText = c.name;
         document.getElementById('back-ingredients').innerText = c.ingredients;
         document.getElementById('back-method').innerText = c.method;
